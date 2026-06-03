@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GROUP 4 AI ENGINE</title>
+  <style>
+    :root { --purple: #7b2ff7; --gold: #ffd700; --white: #ffffff; --dark: #090818; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Inter, system-ui, sans-serif; }
+    body { min-height: 100vh; background: radial-gradient(circle at top, #1e0f50 0%, #07040e 100%); color: var(--white); }
+    main { max-width: 1024px; margin: 0 auto; padding: 24px; }
+    header { text-align: center; padding: 24px 0; }
+    h1 { font-size: 2.4rem; margin-bottom: 8px; }
+    p.lead { opacity: 0.8; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 24px; margin-bottom: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .input-group { display: grid; gap: 12px; margin: 16px 0; }
+    input, textarea, select { width: 100%; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); color: var(--white); border-radius: 12px; padding: 14px; }
+    textarea { min-height: 120px; resize: vertical; }
+    button { cursor: pointer; border: none; border-radius: 14px; background: linear-gradient(135deg, var(--purple), var(--gold)); color: #07080f; font-weight: 700; padding: 14px 20px; transition: transform 0.15s ease; }
+    button:hover { transform: translateY(-1px); }
+    .button-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+    .message { margin-top: 10px; min-height: 1.25rem; color: #a5f3fc; }
+    .metric { padding: 18px; border-radius: 18px; background: rgba(255,255,255,0.04); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06); }
+    .metric strong { display: block; margin-top: 8px; font-size: 1.8rem; }
+    .options { display: grid; gap: 12px; margin-top: 16px; }
+    .option { padding: 14px 16px; border-radius: 14px; background: rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s ease; }
+    .option:hover { background: rgba(255,255,255,0.12); }
+    footer { text-align: center; padding: 18px 0 12px; opacity: 0.7; }
+    @media (max-width: 800px) { .grid-3 { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>GROUP 4 AI ENGINE</h1>
+      <p class="lead">AI-powered quiz generation and learning insights.</p>
+    </header>
+
+    <section id="loginScreen" class="screen active">
+      <div class="card">
+        <h2>Login</h2>
+        <div class="input-group">
+          <input id="loginEmail" type="email" placeholder="Email" autocomplete="username">
+          <input id="loginPassword" type="password" placeholder="Password" autocomplete="current-password">
+        </div>
+        <div class="button-row">
+          <button id="loginButton" type="button">Login</button>
+          <button id="showRegisterButton" type="button">Create account</button>
+        </div>
+        <div id="loginMessage" class="message"></div>
+      </div>
+    </section>
+
+    <section id="registerScreen" class="screen">
+      <div class="card">
+        <h2>Register</h2>
+        <div class="input-group">
+          <input id="registerName" type="text" placeholder="Name" autocomplete="name">
+          <input id="registerEmail" type="email" placeholder="Email" autocomplete="username">
+          <input id="registerPassword" type="password" placeholder="Password" autocomplete="new-password">
+        </div>
+        <div class="button-row">
+          <button id="registerButton" type="button">Register</button>
+          <button id="showLoginButton" type="button">Back to login</button>
+        </div>
+        <div id="registerMessage" class="message"></div>
+      </div>
+    </section>
+
+    <section id="dashboardScreen" class="screen">
+      <div class="card">
+        <div class="button-row" style="justify-content: space-between; gap: 12px;">
+          <button id="generateQuizButton" type="button">Create Quiz</button>
+          <button id="logoutButton" type="button">Logout</button>
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="metric">Average Score<strong id="avgScoreValue">0%</strong></div>
+        <div class="metric">Quizzes Taken<strong id="quizzesCompletedValue">0</strong></div>
+        <div class="metric">Top Score<strong id="highestScoreValue">0%</strong></div>
+      </div>
+      <div class="card">
+        <h3>Recent Activity</h3>
+        <div id="recentQuizzesList" style="display:grid;gap:12px;margin-top:12px;"></div>
+      </div>
+    </section>
+
+    <section id="setupScreen" class="screen">
+      <div class="card">
+        <h2>Generate Quiz</h2>
+        <div class="input-group">
+          <textarea id="syllabusInput" placeholder="Paste syllabus or study material here..."></textarea>
+          <input id="topicInput" type="text" placeholder="Quiz topic (optional)">
+          <select id="difficultyInput">
+            <option value="Easy">Easy</option>
+            <option value="Medium" selected>Medium</option>
+            <option value="Hard">Hard</option>
+          </select>
+          <input id="questionCountInput" type="number" min="1" max="20" value="5" placeholder="Number of questions">
+        </div>
+        <div class="button-row">
+          <button id="generateButton" type="button">Generate Quiz</button>
+          <button id="cancelSetupButton" type="button">Cancel</button>
+        </div>
+        <div id="setupMessage" class="message"></div>
+      </div>
+    </section>
+
+    <section id="quizScreen" class="screen">
+      <div class="card">
+        <div class="button-row" style="justify-content: space-between; gap: 12px;">
+          <div>Time: <strong id="timerValue">0</strong>s</div>
+          <div id="questionCounter">Question 1 of 1</div>
+        </div>
+        <h3 id="questionText" style="margin-top:18px;">Question text will appear here.</h3>
+        <div id="optionsContainer" class="options"></div>
+        <div class="button-row" style="margin-top:18px;">
+          <button id="prevQuestionButton" type="button">Previous</button>
+          <button id="nextQuestionButton" type="button">Next</button>
+          <button id="submitQuizButton" type="button">Submit Quiz</button>
+        </div>
+        <div id="quizMessage" class="message"></div>
+      </div>
+    </section>
+
+    <section id="resultsScreen" class="screen">
+      <div class="card">
+        <h2>Results</h2>
+        <div class="metric">Final Score<strong id="resultScore">0%</strong></div>
+        <p id="resultGrade" style="margin:16px 0 0;">Performance summary</p>
+        <p id="resultSummary" style="opacity:0.85;"></p>
+        <div class="button-row" style="margin-top:18px;"><button id="backToDashboardButton" type="button">Back to Dashboard</button></div>
+      </div>
+    </section>
+  </main>
+  <footer>GROUP 4 AI ENGINE • AI-Powered Education System</footer>
+  <script src="app.js"></script>
+</body>
+</html>
